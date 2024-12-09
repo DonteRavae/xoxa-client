@@ -1,0 +1,68 @@
+.container {
+  height: calc(100dvh - 60px);
+  display: flex;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: clamp(350px, 40%, 500px);
+  margin: auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+header {
+  text-align: center;
+
+  h1 {
+    margin-bottom: 10px;
+    font-weight: normal;
+    font-size: 30px;
+  }
+
+  a {
+    width: fit-content;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .error-message {
+    height: 0;
+    opacity: 0;
+    color: red;
+    margin: 10px 0;
+    transition: 600ms ease all;
+
+    &.active {
+      height: 20px;
+      opacity: 1;
+    }
+  }
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+footer {
+  p {
+    text-align: center;
+    font-size: 12px;
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,51 @@
+#application-header {
+  height: 60px;
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  background: #333;
+  padding: 0 50px;
+
+  nav {
+    width: 100%;
+    display: flex;
+    gap: 50px;
+    align-items: center;
+  }
+
+  #logo-container {
+    min-width: 150px;
+    height: 100%;
+    background: white;
+
+    .logo {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &#login-button {
+      width: 75px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      color: black;
+      border-radius: 16px;
+      margin-left: auto;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: fit-content;
+
+  input {
+    width: 100%;
+    height: 35px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    line-height: 24px;
+    position: relative;
+    border-bottom: 1px solid black;
+
+    &:focus ~ label {
+      top: -17px;
+      left: 0;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+
+      .tooltip {
+        visibility: visible;
+      }
+    }
+  }
+
+  input[type="password"] {
+    letter-spacing: 0.3em;
+  }
+
+  label {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    z-index: 2;
+    top: 10px;
+    font-size: 16px;
+    font-weight: bolder;
+    transition: all 300ms ease-in-out;
+
+    &.error-message {
+      color: red;
+      font-weight: bolder;
+
+      span {
+        font-style: italic;
+        text-transform: none;
+      }
+    }
+
+    .required-indicator {
+      color: red;
+      font-size: 12px;
+    }
+
+    &.shrink {
+      top: -17px;
+      left: 0;
+      font-size: 12px;
+      letter-spacing: 0.05em;
+
+      .tooltip {
+        visibility: visible;
+      }
+    }
+
+    .tooltip {
+      height: 16px;
+      width: 16px;
+      visibility: hidden;
+      position: relative;
+
+      svg {
+        height: 100%;
+        width: 100%;
+      }
+
+      .information {
+        width: 350px;
+        height: fit-content;
+        margin: 0;
+        opacity: 1;
+        z-index: 5;
+        top: -10px;
+        left: 20px;
+        padding: 10px;
+        position: absolute;
+        background: #dfdfdf;
+        border-radius: 5px;
+        visibility: hidden;
+        transition: 200ms ease all;
+        color: black;
+        font-weight: lighter;
+        font-size: 14px;
+      }
+
+      &:hover {
+        .information {
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  .validation-message {
+    height: 0;
+    max-height: 0;
+    opacity: 0;
+    color: red;
+    margin: 5px 0 0;
+    transition: 600ms ease all;
+
+    &.active {
+      height: auto;
+      max-height: 36px;
+      opacity: 1;
+    }
+  }
+}

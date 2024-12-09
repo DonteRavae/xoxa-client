@@ -1,0 +1,11 @@
+.form-button {
+  height: max(50px);
+  width: max(100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
