@@ -24,7 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (response.ok) {
     return redirect("/dashboard", {
-      headers: response.headers
+      headers: response.headers,
     });
   }
 

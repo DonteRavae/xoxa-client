@@ -1,0 +1,22 @@
+.group-pfp {
+  height: 100%;
+  border-radius: 100%;
+  cursor: pointer;
+  background: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+
+  svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.pfp {
+  height: 100%;
+  border-radius: 100%;
+  cursor: pointer;
+  border: 2px solid white;
+}

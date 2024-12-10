@@ -6,10 +6,11 @@ import {
   useEffect,
   useState,
 } from "react";
-// STYLES
-import styles from "./FormInput.module.css";
+// EXTERNAL
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+// STYLES
+import styles from "./FormInput.module.css";
 
 interface FormInputProps extends ComponentProps<"input"> {
   label: string;
