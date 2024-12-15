@@ -29,7 +29,16 @@ export const links: LinksFunction = () => [
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   // Fetch user profile snapshot
 
-  const profileSnapshot = await fetchUserProfileSnapshot(request);
+  let profileSnapshot = await fetchUserProfileSnapshot(request);
+  // For temporary testing purposes, the snapshot will be appended with communities and notifications properties.
+
+  if (profileSnapshot) {
+    profileSnapshot = {
+      ...profileSnapshot,
+      communities: [],
+      notifications: [],
+    };
+  }
 
   return profileSnapshot;
 };

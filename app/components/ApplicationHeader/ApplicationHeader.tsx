@@ -1,10 +1,11 @@
 // REACT
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 // REMIX
 import { Link, useLoaderData, useLocation } from "@remix-run/react";
 // INTERNAL;
 import { loader } from "../../root";
 import ProfilePicture from "../ProfilePicture/ProfilePicture";
+import DropdownMenu, { DropdownOptions } from "./components/Dropdowns";
 // EXTERNAL
 import {
   faBell,
@@ -24,6 +25,20 @@ export default function ApplicationHeader() {
 
   const snapshot = useLoaderData<typeof loader>();
 
+  const [showCommunities, setShowCommunities] = useState<boolean>(false);
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+
+  const openDropdownMenu = (dropdown: DropdownOptions) => {
+    if (dropdown === DropdownOptions.Community) {
+      setShowCommunities((show) => !show);
+      setShowNotifications(false);
+      return;
+    }
+
+    setShowNotifications((show) => !show);
+    setShowCommunities(false);
+  };
+
   return (
     <header id={styles["application-header"]}>
       <Link to="/">
@@ -39,21 +54,65 @@ export default function ApplicationHeader() {
               Log In
             </Link>
           ) : (
-            <div id={styles["account-navigation-control"]}>
-              <button title="Show communities" aria-label="Show communities">
-                <FontAwesomeIcon icon={faLayerGroup} />
-              </button>
-              <button title="Open chat" aria-label="Open chat">
-                <FontAwesomeIcon icon={faMessage} />
-              </button>
-              <button
-                title="Show notifications"
-                aria-label="Show notifications"
-              >
-                <FontAwesomeIcon icon={faBell} />
-              </button>
-              <ProfilePicture img_url="https://xsgames.co/randomusers/avatar.php?g=male" />
-            </div>
+            <>
+              <div id={styles["account-navigation-control"]}>
+                <button
+                  title="Show communities"
+                  aria-label="Show communities"
+                  onClick={() => openDropdownMenu(DropdownOptions.Community)}
+                >
+                  <FontAwesomeIcon icon={faLayerGroup} />
+                </button>
+                <button title="Open chat" aria-label="Open chat">
+                  <FontAwesomeIcon icon={faMessage} />
+                </button>
+                <button
+                  title="Show notifications"
+                  aria-label="Show notifications"
+                  onClick={() => openDropdownMenu(DropdownOptions.Notification)}
+                >
+                  <FontAwesomeIcon icon={faBell} />
+                </button>
+                <ProfilePicture img_url={snapshot.img_url} />
+
+                {/* DROPDOWN MENUS */}
+                {showCommunities && (
+                  <DropdownMenu kind={DropdownOptions.Community}>
+                    {snapshot.communities.length ? (
+                      <ul></ul>
+                    ) : (
+                      <p className={styles["empty-message"]}>
+                        {
+                          "It's looking pretty empty around here. Join a community!"
+                        }
+                      </p>
+                    )}
+                    <ul></ul>
+                  </DropdownMenu>
+                )}
+
+                {showNotifications && (
+                  <DropdownMenu kind={DropdownOptions.Notification}>
+                    {snapshot.notifications.length ? (
+                      <ul></ul>
+                    ) : (
+                      <p className={styles["empty-message"]}>
+                        No new notifications.
+                      </p>
+                    )}
+                  </DropdownMenu>
+                )}
+              </div>
+              {(showNotifications || showCommunities) && (
+                <button
+                  className={styles.overlay}
+                  onClick={() => {
+                    setShowCommunities(false);
+                    setShowNotifications(false);
+                  }}
+                />
+              )}
+            </>
           )}
         </nav>
       )}

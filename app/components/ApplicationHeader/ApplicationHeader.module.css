@@ -72,5 +72,21 @@
         height: 20px;
       }
     }
+
+    .empty-message {
+      text-align: center;
+    }
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9;
+    backdrop-filter: blur(1px);
+    border: none;
+    background: none;
   }
 }
