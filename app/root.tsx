@@ -8,7 +8,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 // INTERNAL
-import fetchUserProfileSnapshot from "./routes/actions/fetchProfileSnapshot";
+import { getUserProfileSnapshot } from "./routes/actions";
 import ApplicationHeader from "./components/ApplicationHeader/ApplicationHeader";
 // STYLES
 import "./app.css";
@@ -27,20 +27,11 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // Fetch user profile snapshot
-
-  let profileSnapshot = await fetchUserProfileSnapshot(request);
-  // For temporary testing purposes, the snapshot will be appended with communities and notifications properties.
-
-  if (profileSnapshot) {
-    profileSnapshot = {
-      ...profileSnapshot,
-      communities: [],
-      notifications: [],
-    };
+  try {
+    return await getUserProfileSnapshot(request.headers);
+  } catch (error) {
+    return null;
   }
-
-  return profileSnapshot;
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -15,6 +15,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // STYLES
 import styles from "./ApplicationHeader.module.css";
+import { UserProfileSnapshot } from "../../utils/types";
 
 export default function ApplicationHeader() {
   const location = useLocation();
@@ -23,7 +24,7 @@ export default function ApplicationHeader() {
     return path === "/register" || path === "/login";
   }, [location]);
 
-  const snapshot = useLoaderData<typeof loader>();
+  const data: UserProfileSnapshot = useLoaderData<typeof loader>();
 
   const [showCommunities, setShowCommunities] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
@@ -49,7 +50,7 @@ export default function ApplicationHeader() {
           <Link to="/wiki">Wiki</Link>
           <Link to="/collab">Collab</Link>
           <Link to="/recruiting">Recruiting</Link>
-          {!snapshot ? (
+          {!data ? (
             <Link id={styles["login-button"]} to="/login">
               Log In
             </Link>
@@ -73,12 +74,12 @@ export default function ApplicationHeader() {
                 >
                   <FontAwesomeIcon icon={faBell} />
                 </button>
-                <ProfilePicture img_url={snapshot.img_url} />
+                <ProfilePicture img_url={data?.img_url} />
 
                 {/* DROPDOWN MENUS */}
                 {showCommunities && (
                   <DropdownMenu kind={DropdownOptions.Community}>
-                    {snapshot.communities.length ? (
+                    {[].length ? (
                       <ul></ul>
                     ) : (
                       <p className={styles["empty-message"]}>
@@ -93,7 +94,7 @@ export default function ApplicationHeader() {
 
                 {showNotifications && (
                   <DropdownMenu kind={DropdownOptions.Notification}>
-                    {snapshot.notifications.length ? (
+                    {[].length ? (
                       <ul></ul>
                     ) : (
                       <p className={styles["empty-message"]}>

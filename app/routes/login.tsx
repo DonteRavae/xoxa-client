@@ -1,39 +1,39 @@
 // REACT
 import { ChangeEventHandler, useEffect, useRef, useState } from "react";
 // REMIX
-import { Link, useFetcher } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 // INTERNAL
-import requestAccess, {
-  AccessRequestResponse,
-  AccessType,
-  LoginRequest,
-} from "./actions/requestAccess";
+import { requestAccess } from "./actions";
+import { AccessType, LoginRequest } from "../utils/types";
 import FormInput from "../components/Forms/FormInput/FormInput";
 import FormButton from "../components/Forms/FormButton/FormButton";
 // STYLES
 import styles from "./styles/login.module.css";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  let error = "";
   const inputs = Object.fromEntries(await request.formData()) as LoginRequest;
-  const response = (await requestAccess(
-    AccessType.Login,
-    inputs
-  )) as AccessRequestResponse;
 
-  if (response.ok) {
+  try {
+    const response = await requestAccess(inputs, AccessType.Login);
+    if (response.status !== 200) {
+      return await response.text();
+    }
+
+    const headers = new Headers();
+    headers.append("Set-Cookie", response.headers.getSetCookie()[0]);
+    headers.append("Set-Cookie", response.headers.getSetCookie()[1]);
+
     return redirect("/dashboard", {
-      headers: response.headers,
+      headers,
     });
+  } catch (error) {
+    return "We apologize. There seems to be an error on our end. Please try again.";
   }
-
-  error = response.error!;
-  return error;
 };
 
 export default function LoginPage() {
-  const { Form, data } = useFetcher();
+  const data = useActionData<typeof action>();
 
   // Input Control
   const [inputs, setInputs] = useState<{ email: string; password: string }>({
@@ -53,7 +53,7 @@ export default function LoginPage() {
 
   return (
     <main className={styles.container}>
-      <Form method="POST">
+      <Form method="POST" action="/login">
         <header>
           <h1>Welcome back!</h1>
           <p>Ready to jump back in?</p>
@@ -65,7 +65,7 @@ export default function LoginPage() {
             name="email"
             ref={emailRef}
             value={inputs.email}
-            errorMessage={data as string}
+            errorMessage={data ? data : ""}
             handleChange={handleChange}
           />
           <FormInput
@@ -73,7 +73,7 @@ export default function LoginPage() {
             label={"Password"}
             name="password"
             type="password"
-            errorMessage={data as string}
+            errorMessage={data ? data : ""}
             value={inputs.password}
             handleChange={handleChange}
           />

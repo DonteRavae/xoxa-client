@@ -1,16 +1,14 @@
 // REACT
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 // REMIX
-import { ActionFunctionArgs } from "@remix-run/node";
-import { Link, redirect, useFetcher } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
+import { ActionFunctionArgs, redirect } from "@remix-run/node";
 // INTERNAL
-import requestAccess, {
-  AccessRequestResponse,
-  AccessType,
-  CreateAccountRequest,
-} from "./actions/requestAccess";
+import { requestAccess } from "./actions";
 import FormInput from "../components/Forms/FormInput/FormInput";
+import { AccessType, CreateAccountRequest } from "../utils/types";
 import FormButton from "../components/Forms/FormButton/FormButton";
+import useInputAvailabilityCheck from "../hooks/useInputAvailabilityCheck";
 // STYLES
 import styles from "./styles/register.module.css";
 
@@ -29,40 +27,43 @@ const INITIAL_INPUTS: RegistrationInputs = {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  let error = "";
   const inputs = Object.fromEntries(
     await request.formData()
   ) as CreateAccountRequest;
 
-  const response = (await requestAccess(
-    AccessType.Register,
-    inputs
-  )) as AccessRequestResponse;
+  try {
+    const response = await requestAccess(inputs, AccessType.Register);
+    if (response.status !== 200) {
+      return await response.text();
+    }
 
-  if (response.ok) {
+    const headers = new Headers();
+    headers.append("Set-Cookie", response.headers.getSetCookie()[0]);
+    headers.append("Set-Cookie", response.headers.getSetCookie()[1]);
+
     return redirect("/dashboard", {
-      headers: response.headers,
+      headers,
     });
+  } catch (error) {
+    return "We apologize. There seems to be an error on our end. Please try again.";
   }
-
-  error = response.error!;
-  return error;
 };
 
 export default function UserRegistrationPage() {
-  const { Form, data } = useFetcher();
+  const data = useActionData<typeof action>();
 
   // Input Control
   const [inputs, setInputs] = useState<RegistrationInputs>(INITIAL_INPUTS);
   const [inputValidationMessages, setInputValidationMessage] =
     useState<RegistrationInputs>(INITIAL_INPUTS);
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.currentTarget;
+    if (target.name === "email")
+      emailAvailability.resetInputAvailabilityMessage();
+    if (target.name === "username")
+      usernameAvailability.resetInputAvailabilityMessage();
     setInputs({ ...inputs, [target.name]: target.value });
-    setInputValidationMessage({
-      ...inputValidationMessages,
-      [target.name]: "",
-    });
   };
 
   // Focus Control
@@ -100,57 +101,17 @@ export default function UserRegistrationPage() {
       });
   };
 
-  const [isEmailAvailable, setIsEmailAvailable] = useState<boolean>(true);
-  const doesEmailExist = async () => {
-    if (!inputs.email.length) return;
+  const emailAvailability = useInputAvailabilityCheck(
+    "/auth/checkEmail",
+    inputs.email,
+    "Email is already taken."
+  );
 
-    const isEmailTaken = await fetch("http://localhost:8000/auth/checkEmail", {
-      method: "POST",
-      body: JSON.stringify({ email: inputs.email }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json());
-
-    if (isEmailTaken)
-      setInputValidationMessage({
-        ...inputValidationMessages,
-        email: "Email is already taken.",
-      });
-
-    setIsEmailAvailable(!isEmailTaken);
-  };
-
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean>(true);
-  const doesUsernameExist = async () => {
-    if (!inputs.username.length) return;
-
-    const isUsernameTaken = await fetch(
-      "http://localhost:8000/xis/checkUsername",
-      {
-        method: "POST",
-        body: JSON.stringify({ username: inputs.username }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((res) => res.json());
-
-    if (isUsernameTaken)
-      setInputValidationMessage({
-        ...inputValidationMessages,
-        username:
-          "Username is already taken. Try adding special characters or numbers.",
-      });
-    else {
-      setInputValidationMessage({
-        ...inputValidationMessages,
-        username: `${inputs.username} is available!`,
-      });
-
-      setIsUsernameAvailable(!isUsernameTaken);
-    }
-  };
+  const usernameAvailability = useInputAvailabilityCheck(
+    "/xis/checkUsername",
+    inputs.username,
+    "Username is already taken. Try adding special characters or numbers."
+  );
 
   return (
     <main className={styles.container}>
@@ -163,7 +124,7 @@ export default function UserRegistrationPage() {
               data ? styles.active : ""
             }`}
           >
-            {data as string}
+            {data}
           </p>
         </header>
         <section>
@@ -172,14 +133,13 @@ export default function UserRegistrationPage() {
             id="emailInput"
             name="email"
             type="email"
+            ref={emailRef}
             value={inputs.email}
             aria-invalid={!isEmailValid}
-            validationMessage={
-              !isEmailAvailable && inputs.email.length
-                ? inputValidationMessages.email
-                : ""
+            validationMessage={emailAvailability.inputAvailabilityMessage}
+            onBlur={
+              inputs.email.length ? emailAvailability.checkInput : undefined
             }
-            onBlur={doesEmailExist}
             handleChange={handleInputChange}
             required
           />
@@ -188,11 +148,9 @@ export default function UserRegistrationPage() {
             id="usernameInput"
             name="username"
             value={inputs.username}
-            aria-invalid={!isUsernameAvailable}
-            validationMessage={
-              inputs.username ? inputValidationMessages.username : ""
-            }
-            onBlur={doesUsernameExist}
+            aria-invalid={!usernameAvailability.isInputAvailable}
+            validationMessage={usernameAvailability.inputAvailabilityMessage}
+            onBlur={usernameAvailability.checkInput}
             handleChange={handleInputChange}
             required
           />
