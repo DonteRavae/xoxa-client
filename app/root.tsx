@@ -6,9 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 // INTERNAL
-import { getUserProfileSnapshot } from "./routes/actions";
+import { getUserProfileSnapshot } from "./pages/actions";
 import ApplicationHeader from "./components/ApplicationHeader/ApplicationHeader";
 // STYLES
 import "./app.css";
@@ -28,7 +28,7 @@ export const links: LinksFunction = () => [
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
-    return await getUserProfileSnapshot(request.headers);
+    return await getUserProfileSnapshot(request);
   } catch (error) {
     return null;
   }
