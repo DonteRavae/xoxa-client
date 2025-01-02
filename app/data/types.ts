@@ -4,10 +4,37 @@ export enum AccessType {
 }
 
 export type UserProfileSnapshot = {
-  id: string;
   username: string;
   img_url: string;
 };
+
+export interface DiscussionPost {
+  id: string;
+  title: string;
+  author: UserProfileSnapshot;
+  likes: number;
+  comments: Comment[];
+  slug: string;
+  community: Community;
+}
+
+export interface Comment {}
+
+export interface Community {
+  id: string;
+  name: string;
+  logoUrl: string;
+}
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  author: UserProfileSnapshot;
+  likes: number;
+  comments: Comment[];
+  slug: string;
+  community: Community;
+}
 
 /// REQUEST AND RESPONSES
 

@@ -4,12 +4,12 @@ import { ChangeEventHandler, useEffect, useRef, useState } from "react";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 // INTERNAL
-import { requestAccess } from "./actions";
-import { AccessType, LoginRequest } from "../utils/types";
-import FormInput from "../components/Forms/FormInput/FormInput";
-import FormButton from "../components/Forms/FormButton/FormButton";
+import { requestAccess } from "../actions";
+import { AccessType, LoginRequest } from "../../data/types";
+import FormInput from "../../components/Forms/FormInput/FormInput";
+import FormButton from "../../components/Forms/FormButton/FormButton";
 // STYLES
-import styles from "./styles/login.module.css";
+import styles from "../styles/login.module.css";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const inputs = Object.fromEntries(await request.formData()) as LoginRequest;
@@ -24,7 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     headers.append("Set-Cookie", response.headers.getSetCookie()[0]);
     headers.append("Set-Cookie", response.headers.getSetCookie()[1]);
 
-    return redirect("/dashboard", {
+    return redirect("/xc/feed", {
       headers,
     });
   } catch (error) {

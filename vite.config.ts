@@ -18,6 +18,25 @@ export default defineConfig({
         v3_singleFetch: true,
         v3_lazyRouteDiscovery: true,
       },
+      routes(defineRoutes) {
+        return defineRoutes((route) => {
+          route("/", "pages/views/landing.tsx", { index: true });
+          route("login", "pages/views/login.tsx");
+          route("register", "pages/views/register.tsx");
+          route("wiki", "pages/views/wiki.tsx");
+          route("recruiting", "pages/views/recruiting.tsx");
+          route("collab", "pages/views/collab.tsx");
+          route("xc", "pages/views/xc/layout.tsx", () => {
+            route(":communityName", "pages/views/xc/community.tsx");
+            route("profile/:username", "pages/views/xc/profile.tsx");
+            route(
+              ":communityName/posts/:postId",
+              "pages/views/xc/discussionPost.tsx"
+            );
+            route("feed", "pages/views/xc/dashboard.tsx");
+          });
+        });
+      },
     }),
     tsconfigPaths(),
   ],

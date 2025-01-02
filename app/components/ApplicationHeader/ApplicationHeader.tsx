@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Link, useLoaderData, useLocation } from "@remix-run/react";
 // INTERNAL;
 import { loader } from "../../root";
+import { UserProfileSnapshot } from "../../data/types";
 import ProfilePicture from "../ProfilePicture/ProfilePicture";
 import DropdownMenu, { DropdownOptions } from "./components/Dropdowns";
 // EXTERNAL
@@ -15,7 +16,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // STYLES
 import styles from "./ApplicationHeader.module.css";
-import { UserProfileSnapshot } from "../../utils/types";
 
 export default function ApplicationHeader() {
   const location = useLocation();
@@ -24,7 +24,7 @@ export default function ApplicationHeader() {
     return path === "/register" || path === "/login";
   }, [location]);
 
-  const data: UserProfileSnapshot = useLoaderData<typeof loader>();
+  const userProfile: UserProfileSnapshot | null = useLoaderData<typeof loader>();
 
   const [showCommunities, setShowCommunities] = useState<boolean>(false);
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
@@ -50,7 +50,7 @@ export default function ApplicationHeader() {
           <Link to="/wiki">Wiki</Link>
           <Link to="/collab">Collab</Link>
           <Link to="/recruiting">Recruiting</Link>
-          {!data ? (
+          {!userProfile ? (
             <Link id={styles["login-button"]} to="/login">
               Log In
             </Link>
@@ -74,7 +74,7 @@ export default function ApplicationHeader() {
                 >
                   <FontAwesomeIcon icon={faBell} />
                 </button>
-                <ProfilePicture img_url={data?.img_url} />
+                <ProfilePicture userProfile={userProfile}/>
 
                 {/* DROPDOWN MENUS */}
                 {showCommunities && (

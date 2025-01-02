@@ -4,13 +4,13 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
 // INTERNAL
-import { requestAccess } from "./actions";
-import FormInput from "../components/Forms/FormInput/FormInput";
-import { AccessType, CreateAccountRequest } from "../utils/types";
-import FormButton from "../components/Forms/FormButton/FormButton";
-import useInputAvailabilityCheck from "../hooks/useInputAvailabilityCheck";
+import { requestAccess } from "../actions";
+import FormInput from "../../components/Forms/FormInput/FormInput";
+import { AccessType, CreateAccountRequest } from "../../data/types";
+import FormButton from "../../components/Forms/FormButton/FormButton";
+import useInputAvailabilityCheck from "../../hooks/useInputAvailabilityCheck";
 // STYLES
-import styles from "./styles/register.module.css";
+import styles from "../styles/register.module.css";
 
 interface RegistrationInputs {
   email: string;
@@ -41,7 +41,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     headers.append("Set-Cookie", response.headers.getSetCookie()[0]);
     headers.append("Set-Cookie", response.headers.getSetCookie()[1]);
 
-    return redirect("/dashboard", {
+    return redirect("/xc/feed", {
       headers,
     });
   } catch (error) {
@@ -54,8 +54,6 @@ export default function UserRegistrationPage() {
 
   // Input Control
   const [inputs, setInputs] = useState<RegistrationInputs>(INITIAL_INPUTS);
-  const [inputValidationMessages, setInputValidationMessage] =
-    useState<RegistrationInputs>(INITIAL_INPUTS);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.currentTarget;
@@ -91,14 +89,13 @@ export default function UserRegistrationPage() {
     [inputs.password, inputs.confirmPassword]
   );
 
+  const [invalidPasswordMatchMessage, setInvalidPasswordMatchMessage] =
+    useState<string>("");
   const comparePasswords = () => {
     if (!inputs.confirmPassword.length) return;
 
     if (inputs.password !== inputs.confirmPassword)
-      setInputValidationMessage({
-        ...inputValidationMessages,
-        confirmPassword: "Passwords must match.",
-      });
+      setInvalidPasswordMatchMessage("Passwords must match.");
   };
 
   const emailAvailability = useInputAvailabilityCheck(
@@ -162,7 +159,11 @@ export default function UserRegistrationPage() {
             value={inputs.password}
             information="Must include uppercase and lowercase letters, a number, and a special character."
             aria-invalid={!isPasswordValid}
-            validationMessage={inputValidationMessages.password}
+            validationMessage={
+              !isPasswordValid
+                ? "Password must include uppercase and lowercase letters, a number, and a special character."
+                : ""
+            }
             handleChange={handleInputChange}
             required
           />
@@ -175,8 +176,8 @@ export default function UserRegistrationPage() {
             value={inputs.confirmPassword}
             aria-invalid={!doPasswordsMatch}
             validationMessage={
-              inputs.confirmPassword.length
-                ? inputValidationMessages.confirmPassword
+              inputs.confirmPassword.length && invalidPasswordMatchMessage
+                ? invalidPasswordMatchMessage
                 : ""
             }
             onBlur={comparePasswords}

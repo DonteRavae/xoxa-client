@@ -1,7 +1,7 @@
 // REACT
 import { useState } from "react";
 // INTERNAL
-import { BASE_URL } from "../routes/actions";
+import { BASE_URL } from "../pages/actions";
 
 export default function useInputAvailabilityCheck(
   url: string,

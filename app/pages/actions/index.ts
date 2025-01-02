@@ -3,7 +3,7 @@ import {
   AccessType,
   CreateAccountRequest,
   LoginRequest,
-} from "../../utils/types";
+} from "../../data/types";
 
 export const BASE_URL =
   process.env.NODE_ENV === "production"
@@ -39,6 +39,9 @@ export const getUserProfileSnapshot = async (request: Request) => {
     if (userProfile && response.status === 201)
       return data(userProfile, { headers });
 
+    if (response.status !== 200 && response.status !== 201)
+      return redirect("/login");
+
     return userProfile;
   });
 };
@@ -57,15 +60,14 @@ export const requestAccess = async (
 };
 
 export const communityFetch = async (
+  request: Request,
   query: string,
   variables?: { request: string }
 ) => {
   try {
-    const response = await fetch(`${BASE_URL}/xcs`, {
+    const response = await fetch(`${BASE_URL!}/xcs`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: request.headers,
       body: JSON.stringify({
         query,
         variables,
