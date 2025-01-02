@@ -1,0 +1,18 @@
+.button-group button {
+  height: 40px;
+  width: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  .code-block {
+    border: 1px solid black;
+    padding: 3px;
+  }
+
+  &:hover,
+  &.is-active {
+    background: #dfdfdf;
+    border-radius: 3px;
+  }
+}
